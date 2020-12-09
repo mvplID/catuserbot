@@ -39,13 +39,13 @@ if CONSOLE_LOGGER_VERBOSE:
     basicConfig(
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         level=DEBUG,
-        )
+    )
 else:
     basicConfig(
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=INFO
     )
 LOGS = getLogger(__name__)
-    
+
 try:
     if Config.HEROKU_API_KEY is not None or Config.HEROKU_APP_NAME is not None:
         HEROKU_APP = heroku3.from_key(Config.HEROKU_API_KEY).apps()[
