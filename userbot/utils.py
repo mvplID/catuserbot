@@ -37,7 +37,7 @@ def load_module(shortname):
         import userbot.utils
 
         from .helpers.utils import install_pip
-        from .managers import edit_delete
+        from .managers import edit_delete,edit_or_reply
 
         path = Path(f"userbot/plugins/{shortname}.py")
         name = "userbot.plugins.{}".format(shortname)
