@@ -8,7 +8,7 @@ import os
 from telethon import events
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 
-from .. import CMD_HELP, process
+from . import CMD_HELP, process
 from ..utils import admin_cmd, sudo_cmd
 
 
