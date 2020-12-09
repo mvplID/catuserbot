@@ -1,37 +1,23 @@
 import asyncio
-import datetime
-import importlib
-import inspect
-import logging
-import math
 import os
 import re
-import sys
-import time
-import traceback
-from pathlib import Path
-from time import gmtime, strftime
 
 import requests
-from telethon import events
-from telethon.tl.functions.channels import GetParticipantRequest
-from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
-
-
 
 from ..Config import Config
+
 
 # https://t.me/c/1220993104/623253
 # https://docs.telethon.dev/en/latest/misc/changelog.html#breaking-changes
 async def edit_or_reply(
-        event,
-        text,
-        parse_mode=None,
-        link_preview=None,
-        file_name=None,
-        aslink=False,
-        linktext=None,
-        caption=None,
+    event,
+    text,
+    parse_mode=None,
+    link_preview=None,
+    file_name=None,
+    aslink=False,
+    linktext=None,
+    caption=None,
 ):
     link_preview = link_preview or False
     reply_to = await event.get_reply_message()
@@ -56,9 +42,9 @@ async def edit_or_reply(
                 requests.post(
                     "https://nekobin.com/api/documents", json={"content": text}
                 )
-                    .json()
-                    .get("result")
-                    .get("key")
+                .json()
+                .get("result")
+                .get("key")
             )
             text = linktext + f" [here](https://nekobin.com/{key})"
         except:
