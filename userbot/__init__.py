@@ -87,5 +87,3 @@ SUDO_LIST = {}
 # for later purposes
 INT_PLUG = ""
 LOAD_PLUG = {}
-
-
