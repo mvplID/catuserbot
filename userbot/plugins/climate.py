@@ -15,9 +15,8 @@ from pytz import country_names as c_n
 from pytz import country_timezones as c_tz
 from pytz import timezone as tz
 
-from . import CMD_HELP, LOGS
 from ..utils import admin_cmd, errors_handler, sudo_cmd
-
+from . import CMD_HELP
 
 # ===== CONSTANT =====
 DEFCITY = "Delhi"
@@ -77,8 +76,8 @@ async def get_weather(weather):
     url = f"https://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={APPID}"
     async with aiohttp.ClientSession() as ses:
         async with ses.get(url) as request:
-            requeststatus = request.status
-            resuesttext = await request.text()
+            request.status
+            await request.text()
     result = json.loads(requesttext)
     if requeststatus_code != 200:
         await weather.edit(f"`Invalid city/country.`")
