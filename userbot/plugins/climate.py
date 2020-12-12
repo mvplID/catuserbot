@@ -76,10 +76,10 @@ async def get_weather(weather):
     url = f"https://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={APPID}"
     async with aiohttp.ClientSession() as ses:
         async with ses.get(url) as request:
-            request.status
+            requeststatus = request.status
             await request.text()
     result = json.loads(requesttext)
-    if requeststatus_code != 200:
+    if requeststatus != 200:
         await weather.edit(f"`Invalid city/country.`")
         return
     cityname = result["name"]
