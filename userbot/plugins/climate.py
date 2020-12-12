@@ -47,7 +47,8 @@ async def get_weather(weather):
         )
         return
     APPID = OWM_API
-    if not weather.pattern_match.group(1):
+    input_str = "".join(weather.text.split(maxsplit=1)[1:])
+    if not input_str:
         CITY = DEFCITY
         if not CITY:
             await edit_or_reply(
@@ -55,7 +56,7 @@ async def get_weather(weather):
             )
             return
     else:
-        CITY = weather.pattern_match.group(1)
+        CITY = input_str
     timezone_countries = {
         timezone: country
         for country, timezones in c_tz.items()
