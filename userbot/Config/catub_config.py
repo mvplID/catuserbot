@@ -4,10 +4,8 @@ from os import environ
 
 ENV = bool(environ.get("ENV", False))
 
-# fmt: off
 if ENV:
-    pass
+    from sample_config import Config # noqa
 else:
     if os.path.exists("config.py"):
-        pass
-# fmt: on
+        from config import Development as Config # noqa
