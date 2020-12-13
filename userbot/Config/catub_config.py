@@ -1,7 +1,6 @@
+# config values will be loaded from here
 
 from os import environ
-
-# config values will be loaded from here
 
 ENV = bool(environ.get("ENV", False))
 
