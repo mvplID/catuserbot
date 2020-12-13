@@ -9,7 +9,7 @@ from telethon import events
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 
 from ..utils import admin_cmd, sudo_cmd
-from . import CMD_HELP, process, convert_tosticker
+from . import CMD_HELP, convert_tosticker, process
 
 
 @bot.on(admin_cmd(pattern="q(?: |$)(.*)", outgoing=True))
@@ -37,12 +37,10 @@ async def stickerchat(catquotes):
     res, catmsg = await process(fetchmsg, user, catquotes.client, reply, repliedreply)
     if not res:
         return
-    outfi = os.path.join("./temp" , "sticker.png")
+    outfi = os.path.join("./temp", "sticker.png")
     catmsg.save(outfi)
     endfi = convert_tosticker(outfi)
-    await catquotes.client.send_file(
-        catquotes.chat_id, endfi, reply_to=reply
-    )
+    await catquotes.client.send_file(catquotes.chat_id, endfi, reply_to=reply)
     await catevent.delete()
     os.remove(endfi)
 
@@ -72,12 +70,10 @@ async def stickerchat(catquotes):
     res, catmsg = await process(fetchmsg, user, catquotes.client, reply, repliedreply)
     if not res:
         return
-    outfi = os.path.join("./temp" , "sticker.png")
+    outfi = os.path.join("./temp", "sticker.png")
     catmsg.save(outfi)
     endfi = convert_tosticker(outfi)
-    await catquotes.client.send_file(
-        catquotes.chat_id, endfi, reply_to=reply
-    )
+    await catquotes.client.send_file(catquotes.chat_id, endfi, reply_to=reply)
     await catevent.delete()
     os.remove(endfi)
 
