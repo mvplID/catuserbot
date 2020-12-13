@@ -1,11 +1,14 @@
+
 from os import environ
 
 # config values will be loaded from here
 
 ENV = bool(environ.get("ENV", False))
 
+# fmt: off
 if ENV:
-    pass
+    from sample_config import Config
 else:
     if os.path.exists("config.py"):
-        pass
+        from config import Development as Config
+# fmt: on
