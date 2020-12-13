@@ -44,6 +44,7 @@ async def stickerchat(catquotes):
     await catevent.delete()
     os.remove("./temp/sticker.webp")
 
+
 @bot.on(admin_cmd(pattern="rq(?: |$)(.*)", outgoing=True))
 @bot.on(sudo_cmd(pattern="rq(?: |$)(.*)", allow_sudo=True))
 async def stickerchat(catquotes):
@@ -75,7 +76,7 @@ async def stickerchat(catquotes):
     )
     await catevent.delete()
     os.remove("./temp/sticker.webp")
-    
+
 
 @bot.on(admin_cmd(pattern="qbot(?: |$)(.*)", outgoing=True))
 @bot.on(sudo_cmd(pattern="qbot(?: |$)(.*)", allow_sudo=True))
