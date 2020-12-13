@@ -37,6 +37,7 @@ else
     mv cat_ub/userbot .
     mv cat_ub/init . 
     mv cat_ub/.git .
+    mv cat_ub/sample_config.py .
     mv cat_ub/requirements.txt .
     rm -rf cat_ub
     python ./init/update.py
