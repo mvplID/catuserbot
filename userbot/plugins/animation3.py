@@ -73,10 +73,10 @@ async def _(event):
         await event.edit(animation_chars[i % 12])
 
 
-@bot.on(admin_cmd(pattern=r"dump$", outgoing=True))
-@bot.on(sudo_cmd(pattern=r"dump$", allow_sudo=True))
+@bot.on(admin_cmd(pattern=r"dump ?(.*)", outgoing=True))
+@bot.on(sudo_cmd(pattern=r"dump ?(.*)", allow_sudo=True))
 async def _(message):
-    if event.fwd_from:
+    if message.fwd_from:
         return
     try:
         obj = message.pattern_match.group(1)
