@@ -5,7 +5,7 @@ from os import environ
 ENV = bool(environ.get("ENV", False))
 
 if ENV:
-    from sample_config import Config
+    pass
 else:
     if os.path.exists("config.py"):
-        from config import Development as Config
+        pass
