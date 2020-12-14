@@ -53,6 +53,8 @@ def pack_name(userid, pack, is_anim):
         return f"catuserbot_{userid}_{pack}_anim"
     return f"catuserbot_{userid}_{pack}"
 
+def char_is_emoji(character):
+    return character in emoji.UNICODE_EMOJI
 
 def pack_nick(username, pack, is_anim):
     if Config.CUSTOM_STICKER_PACKNAME:
@@ -267,25 +269,24 @@ async def kang(args):
         return
     if photo:
         splat = ("".join(args.text.split(maxsplit=1)[1:])).split()
+        emoji = emoji if emojibypass else "😂"
         pack = 1
         if len(splat) == 2:
-            if splat[0].isnumeric():
-                pack = splat[0]
-                emoji = splat[1]
-            elif splat[1].isnumeric():
-                pack = splat[1]
+            if char_is_emoji(splat[0][0]):
+                if char_is_emoji(splat[1][0]):
+                    return await catevent.edit("check `.info stickers`")
+                pack = splat[1]  # User sent both
                 emoji = splat[0]
+            elif char_is_emoji(splat[1][0]):
+                pack = splat[0]  # User sent both
+                emoji = splat[1]
             else:
                 return await catevent.edit("check `.info stickers`")
         elif len(splat) == 1:
-            if splat[0].isnumeric():
-                pack = splat[0]
-            else:
+            if char_is_emoji(splat[0][0]):
                 emoji = splat[0]
-        if emoji[0] and emoji[0] not in catemoji.UNICODE_EMOJI:
-            emoji = None
-        if not emoji:
-            emoji = "🤔"
+            else:
+                pack = splat[0]
         packnick = pack_nick(username, pack, is_anim)
         packname = pack_name(userid, pack, is_anim)
         cmd = "/newpack"
