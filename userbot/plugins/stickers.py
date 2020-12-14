@@ -7,6 +7,7 @@ import math
 import random
 import urllib.request
 from os import remove
+
 import emoji as catemoji
 import requests
 from bs4 import BeautifulSoup as bs
