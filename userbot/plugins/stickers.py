@@ -142,7 +142,7 @@ async def newpacksticker(
         await edit_delete(
             catevent,
             f"`Sticker kanged to a Different Pack !\
-                \nAnd Newly created pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
+            \nAnd Newly created pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
             parse_mode="md",
             time=10,
         )
@@ -150,7 +150,7 @@ async def newpacksticker(
         await edit_delete(
             catevent,
             f"`Sticker kanged successfully!\
-                \nYour Pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
+            \nYour Pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
             parse_mode="md",
             time=10,
         )
@@ -210,7 +210,7 @@ async def add_to_pack(
     await edit_delete(
         catevent,
         f"`Sticker kanged successfully!\
-                \nYour Pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
+         \nYour Pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
         parse_mode="md",
         time=10,
     )
