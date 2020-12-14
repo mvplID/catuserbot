@@ -7,6 +7,7 @@ import math
 import random
 import urllib.request
 from os import remove
+
 import emoji as catemoji
 import requests
 from bs4 import BeautifulSoup as bs
@@ -19,15 +20,15 @@ from telethon.tl.types import (
     MessageMediaPhoto,
 )
 
-from . import CMD_HELP
 from ..utils import admin_cmd, sudo_cmd
+from . import CMD_HELP
 
 combot_stickers_url = "https://combot.org/telegram/stickers?q="
 
 EMOJI_SEN = [
     "Можно отправить несколько смайлов в одном сообщении, однако мы рекомендуем использовать не больше одного или двух на каждый стикер.",
-    "You can list several emoji in one message, but I recommend using no more than two per sticker"
-    ]
+    "You can list several emoji in one message, but I recommend using no more than two per sticker",
+]
 
 KANGING_STR = [
     "Using Witchery to kang this sticker...",
@@ -42,15 +43,18 @@ KANGING_STR = [
     "Mr.Steal Your Sticker is stealing this sticker... ",
 ]
 
-def verify_cond(catarray , text):
+
+def verify_cond(catarray, text):
     return any(i in text for i in catarray)
 
-def pack_name(userid , pack , is_anim):
+
+def pack_name(userid, pack, is_anim):
     if is_anim:
         return f"catuserbot_{userid}_{pack}_anim"
     return f"catuserbot_{userid}_{pack}"
 
-def pack_nick(username , pack , is_anim):
+
+def pack_nick(username, pack, is_anim):
     if Config.CUSTOM_STICKER_PACKNAME:
         if is_anim:
             packnick = f"{Config.CUSTOM_STICKER_PACKNAME} Vol.{pack} (Animated)"
@@ -62,6 +66,7 @@ def pack_nick(username , pack , is_anim):
         else:
             packnick = f"@{username} Vol.{pack}"
     return packnick
+
 
 async def resize_photo(photo):
     """ Resize the given photo to 512x512 """
@@ -86,111 +91,135 @@ async def resize_photo(photo):
         image.thumbnail(maxsize)
     return image
 
-async def newpacksticker(catevent, conv, cmd, args, packnick, stfile, emoji, packname, is_anim, otherpack=False):
-        await conv.send_message(cmd)
-        await conv.get_response()
-        await args.client.send_read_acknowledge(conv.chat_id)
-        await conv.send_message(packnick)
-        await conv.get_response()
-        await args.client.send_read_acknowledge(conv.chat_id)
-        if is_anim:
-            await conv.send_file("AnimatedSticker.tgs")
-            remove("AnimatedSticker.tgs")
-        else:
-            stfile.seek(0)
-            await conv.send_file(stfile, force_document=True)
-        rsp = await conv.get_response()
-        if not verify_cond(EMOJI_SEN , rsp.text):
-            await catevent.edit(
-            f"Failed to add sticker, use @Stickers bot to add the sticker manually.\n**error :**{rsp}"
-            )
-            return
-        await conv.send_message(emoji)
-        await args.client.send_read_acknowledge(conv.chat_id)
-        await conv.get_response()
-        await conv.send_message("/publish")
-        if is_anim:
-            await conv.get_response()
-            await conv.send_message(f"<{packnick}>")
-        await conv.get_response()
-        await args.client.send_read_acknowledge(conv.chat_id)
-        await conv.send_message("/skip")
-        await args.client.send_read_acknowledge(conv.chat_id)
-        await conv.get_response()
-        await conv.send_message(packname)
-        await args.client.send_read_acknowledge(conv.chat_id)
-        await conv.get_response()
-        await args.client.send_read_acknowledge(conv.chat_id)
-        if otherpack:
-            await edit_delete(
-                catevent,
-                f"`Sticker kanged to a Different Pack !\
-                \nAnd Newly created pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
-                parse_mode="md",
-                time=10,
-            )
-        else:
-            await edit_delete(
-                catevent,
-                f"`Sticker kanged successfully!\
-                \nYour Pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
-                parse_mode="md",
-                time=10,
-            )
 
-async def add_to_pack(catevent, conv, args, packname, pack, userid, username, is_anim, stfile, emoji):   
-        await conv.send_message("/addsticker")
+async def newpacksticker(
+    catevent,
+    conv,
+    cmd,
+    args,
+    packnick,
+    stfile,
+    emoji,
+    packname,
+    is_anim,
+    otherpack=False,
+):
+    await conv.send_message(cmd)
+    await conv.get_response()
+    await args.client.send_read_acknowledge(conv.chat_id)
+    await conv.send_message(packnick)
+    await conv.get_response()
+    await args.client.send_read_acknowledge(conv.chat_id)
+    if is_anim:
+        await conv.send_file("AnimatedSticker.tgs")
+        remove("AnimatedSticker.tgs")
+    else:
+        stfile.seek(0)
+        await conv.send_file(stfile, force_document=True)
+    rsp = await conv.get_response()
+    if not verify_cond(EMOJI_SEN, rsp.text):
+        await catevent.edit(
+            f"Failed to add sticker, use @Stickers bot to add the sticker manually.\n**error :**{rsp}"
+        )
+        return
+    await conv.send_message(emoji)
+    await args.client.send_read_acknowledge(conv.chat_id)
+    await conv.get_response()
+    await conv.send_message("/publish")
+    if is_anim:
         await conv.get_response()
-        await args.client.send_read_acknowledge(conv.chat_id)
+        await conv.send_message(f"<{packnick}>")
+    await conv.get_response()
+    await args.client.send_read_acknowledge(conv.chat_id)
+    await conv.send_message("/skip")
+    await args.client.send_read_acknowledge(conv.chat_id)
+    await conv.get_response()
+    await conv.send_message(packname)
+    await args.client.send_read_acknowledge(conv.chat_id)
+    await conv.get_response()
+    await args.client.send_read_acknowledge(conv.chat_id)
+    if otherpack:
+        await edit_delete(
+            catevent,
+            f"`Sticker kanged to a Different Pack !\
+                \nAnd Newly created pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
+            parse_mode="md",
+            time=10,
+        )
+    else:
+        await edit_delete(
+            catevent,
+            f"`Sticker kanged successfully!\
+                \nYour Pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
+            parse_mode="md",
+            time=10,
+        )
+
+
+async def add_to_pack(
+    catevent, conv, args, packname, pack, userid, username, is_anim, stfile, emoji
+):
+    await conv.send_message("/addsticker")
+    await conv.get_response()
+    await args.client.send_read_acknowledge(conv.chat_id)
+    await conv.send_message(packname)
+    x = await conv.get_response()
+    while ("50" in x.text) or ("120" in x.text):
+        try:
+            val = int(pack)
+            pack = val + 1
+        except ValueError:
+            pack = 1
+        packname = pack_name(userid, pack, is_anim)
+        packnick = pack_nick(username, pack, is_anim)
+        await catevent.edit(
+            f"`Switching to Pack {str(pack)} due to insufficient space`"
+        )
         await conv.send_message(packname)
         x = await conv.get_response()
-        while ("50" in x.text) or ("120" in x.text):
-            try:
-                val = int(pack)
-                pack = val + 1
-            except ValueError:
-                pack = 1
-            packname = pack_name(userid , pack , is_anim)
-            packnick = pack_nick(username, pack , is_anim)
-            await catevent.edit(
-                f"`Switching to Pack {str(pack)} due to insufficient space`"
+        if x.text == "Invalid pack selected.":
+            return await newpacksticker(
+                conv,
+                cmd,
+                args,
+                packnick,
+                stfile,
+                emoji,
+                packname,
+                is_anim,
+                otherpack=True,
             )
-            await conv.send_message(packname)
-            x = await conv.get_response()
-            if x.text == "Invalid pack selected.":
-                return await newpacksticker(conv, cmd, args, packnick, stfile, emoji, packname, is_anim, otherpack=True)
-        if is_anim:
-            await conv.send_file("AnimatedSticker.tgs")
-            remove("AnimatedSticker.tgs")
-        else:
-            stfile.seek(0)
-            await conv.send_file(stfile, force_document=True)
-        rsp = await conv.get_response()
-        if not verify_cond(EMOJI_SEN , rsp.text):
-            await catevent.edit(
+    if is_anim:
+        await conv.send_file("AnimatedSticker.tgs")
+        remove("AnimatedSticker.tgs")
+    else:
+        stfile.seek(0)
+        await conv.send_file(stfile, force_document=True)
+    rsp = await conv.get_response()
+    if not verify_cond(EMOJI_SEN, rsp.text):
+        await catevent.edit(
             f"Failed to add sticker, use @Stickers bot to add the sticker manually.\n**error :**{rsp}"
-            )
-            return
-        await conv.send_message(emoji)
-        await args.client.send_read_acknowledge(conv.chat_id)
-        await conv.get_response()
-        await conv.send_message("/done")
-        await conv.get_response()
-        await args.client.send_read_acknowledge(conv.chat_id)
-        await edit_delete(
-                catevent,
-                f"`Sticker kanged successfully!\
+        )
+        return
+    await conv.send_message(emoji)
+    await args.client.send_read_acknowledge(conv.chat_id)
+    await conv.get_response()
+    await conv.send_message("/done")
+    await conv.get_response()
+    await args.client.send_read_acknowledge(conv.chat_id)
+    await edit_delete(
+        catevent,
+        f"`Sticker kanged successfully!\
                 \nYour Pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
-                parse_mode="md",
-                time=10,
-            )
+        parse_mode="md",
+        time=10,
+    )
 
 
 @bot.on(admin_cmd(outgoing=True, pattern="kang ?(.*)"))
 @bot.on(sudo_cmd(pattern="kang ?(.*)", allow_sudo=True))
 async def kang(args):
     photo = None
-    emojibypass = False
     is_anim = False
     emoji = None
     message = await args.get_reply_message()
@@ -218,7 +247,6 @@ async def kang(args):
                 in message.media.document.attributes
             ):
                 emoji = message.media.document.attributes[1].alt
-                emojibypass = True
         elif "tgsticker" in message.media.document.mime_type:
             catevent = await edit_or_reply(args, f"`{random.choice(KANGING_STR)}`")
             await args.client.download_file(
@@ -229,7 +257,6 @@ async def kang(args):
             for attribute in attributes:
                 if isinstance(attribute, DocumentAttributeSticker):
                     emoji = attribute.alt
-            emojibypass = True
             is_anim = True
             photo = 1
         else:
@@ -243,12 +270,12 @@ async def kang(args):
         pack = 1
         if len(splat) == 3:
             if splat[1].isnumeric():
-                pack = splat[1] 
+                pack = splat[1]
                 emoji = splat[2]
             elif splat[2].isnumeric():
                 pack = splat[2]
                 emoji = splat[1]
-            else:  
+            else:
                 return await catevent.edit("check `.info stickers`")
         elif len(splat) == 2:
             if splat[1].isnumeric():
@@ -259,8 +286,8 @@ async def kang(args):
             emoji = None
         if not emoji:
             emoji = "🤔"
-        packnick = pack_nick(username , pack , is_anim)
-        packname = pack_name(userid , pack , is_anim)
+        packnick = pack_nick(username, pack, is_anim)
+        packname = pack_name(userid, pack, is_anim)
         cmd = "/newpack"
         stfile = io.BytesIO()
         if is_anim:
@@ -278,11 +305,32 @@ async def kang(args):
             not in htmlstr
         ):
             async with args.client.conversation("Stickers") as conv:
-                await add_to_pack(catevent, conv, args, packname, pack, userid, username, is_anim, stfile, emoji)
+                await add_to_pack(
+                    catevent,
+                    conv,
+                    args,
+                    packname,
+                    pack,
+                    userid,
+                    username,
+                    is_anim,
+                    stfile,
+                    emoji,
+                )
         else:
             await catevent.edit("`Brewing a new Pack...`")
             async with args.client.conversation("Stickers") as conv:
-                await newpacksticker(catevent, conv, cmd, args, packnick, stfile, emoji, packname, is_anim)
+                await newpacksticker(
+                    catevent,
+                    conv,
+                    cmd,
+                    args,
+                    packnick,
+                    stfile,
+                    emoji,
+                    packname,
+                    is_anim,
+                )
 
 
 @bot.on(admin_cmd(pattern="stkrinfo$", outgoing=True))
