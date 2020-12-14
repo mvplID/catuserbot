@@ -8,7 +8,6 @@ import random
 import urllib.request
 from os import remove
 
-import emoji as catemoji
 import requests
 from bs4 import BeautifulSoup as bs
 from PIL import Image
@@ -53,8 +52,10 @@ def pack_name(userid, pack, is_anim):
         return f"catuserbot_{userid}_{pack}_anim"
     return f"catuserbot_{userid}_{pack}"
 
+
 def char_is_emoji(character):
     return character in emoji.UNICODE_EMOJI
+
 
 def pack_nick(username, pack, is_anim):
     if Config.CUSTOM_STICKER_PACKNAME:
