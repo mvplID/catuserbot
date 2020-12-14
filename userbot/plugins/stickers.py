@@ -266,22 +266,22 @@ async def kang(args):
         await edit_delete(args, "`I can't kang that...`")
         return
     if photo:
-        splat = args.text.split()
+        splat = ("".join(args.text.split(maxsplit=1)[1:])).split()
         pack = 1
-        if len(splat) == 3:
-            if splat[1].isnumeric():
-                pack = splat[1]
-                emoji = splat[2]
-            elif splat[2].isnumeric():
-                pack = splat[2]
+        if len(splat) == 2:
+            if splat[0].isnumeric():
+                pack = splat[0]
                 emoji = splat[1]
+            elif splat[1].isnumeric():
+                pack = splat[1]
+                emoji = splat[0]
             else:
                 return await catevent.edit("check `.info stickers`")
-        elif len(splat) == 2:
-            if splat[1].isnumeric():
-                pack = splat[1]
+        elif len(splat) == 1:
+            if splat[0].isnumeric():
+                pack = splat[0]
             else:
-                emoji = splat[1]
+                emoji = splat[0]
         if emoji[0] and emoji[0] not in catemoji.UNICODE_EMOJI:
             emoji = None
         if not emoji:
