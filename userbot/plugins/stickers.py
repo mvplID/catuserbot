@@ -7,7 +7,7 @@ import math
 import random
 import urllib.request
 from os import remove
-
+import emoji as catemoji
 import requests
 from bs4 import BeautifulSoup as bs
 from PIL import Image
@@ -54,7 +54,7 @@ def pack_name(userid, pack, is_anim):
 
 
 def char_is_emoji(character):
-    return character in emoji.UNICODE_EMOJI
+    return character in catemoji.UNICODE_EMOJI
 
 
 def pack_nick(username, pack, is_anim):
@@ -223,6 +223,7 @@ async def add_to_pack(
 @bot.on(sudo_cmd(pattern="kang ?(.*)", allow_sudo=True))
 async def kang(args):
     photo = None
+    emojibypass = False
     is_anim = False
     emoji = None
     message = await args.get_reply_message()
@@ -250,6 +251,7 @@ async def kang(args):
                 in message.media.document.attributes
             ):
                 emoji = message.media.document.attributes[1].alt
+                emojibypass = True
         elif "tgsticker" in message.media.document.mime_type:
             catevent = await edit_or_reply(args, f"`{random.choice(KANGING_STR)}`")
             await args.client.download_file(
@@ -260,6 +262,7 @@ async def kang(args):
             for attribute in attributes:
                 if isinstance(attribute, DocumentAttributeSticker):
                     emoji = attribute.alt
+            emojibypass = True
             is_anim = True
             photo = 1
         else:
