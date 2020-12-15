@@ -412,9 +412,7 @@ async def pack_kang(event):
                 catevent,
                 f"This sticker pack is kanging now . Status of kang process : {kangst}/{noofst}",
             )
-            await event.client.download_file(
-                message, "AnimatedSticker.tgs"
-            )
+            await event.client.download_file(message, "AnimatedSticker.tgs")
             attributes = message.attributes
             for attribute in attributes:
                 if isinstance(attribute, DocumentAttributeSticker):
