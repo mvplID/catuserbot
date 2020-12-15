@@ -7,7 +7,11 @@ import math
 import random
 import urllib.request
 from os import remove
-
+from . import media_type
+from telethon.tl.types import InputStickerSetID
+from telethon.tl.functions.messages import GetStickerSetRequest
+import asyncio
+from telethon.tl import functions, types
 import emoji as catemoji
 import requests
 from bs4 import BeautifulSoup as bs
@@ -338,6 +342,119 @@ async def kang(args):
                     is_anim,
                 )
 
+
+
+@bot.on(admin_cmd(pattern="pkang ?(.*)",outgoing=True))
+@bot.on(sudo_cmd(pattern="pkang ?(.*)",allow_sudo=True))
+async def pack_kang(event):
+    if event.fwd_from:
+        return
+    user = await event.client.get_me()
+    if not user.username:
+        try:
+            user.first_name.encode("utf-8").decode("ascii")
+            username = user.first_name
+        except UnicodeDecodeError:
+            username = f"cat_{user.id}"
+    else:
+        username = user.username
+    photo = None
+    userid = user.id
+    is_anim = False
+    emoji = None
+    reply = await event.get_reply_message()
+    if not reply or media_type(reply) is None or media_type(reply) != "Sticker":
+        return await edit_delete(event, "reply to any sticker to send all stickers in that pack")
+    try:
+        stickerset_attr = reply.document.attributes[1]
+        catevent = await edit_or_reply( event, "Fetching details of the sticker pack, please wait..")
+    except BaseException:
+        return await edit_delete(event, "This is not a sticker. Reply to a sticker.", 5)
+    try:
+        get_stickerset = await event.client(GetStickerSetRequest(InputStickerSetID(id=stickerset_attr.stickerset.id,access_hash=stickerset_attr.stickerset.access_hash,)))
+    except:
+        return await edit_delete(catevent, "I guess this sticker is not part of any pack. So, i cant kang this sticker pack try kang for this sticker")
+    kangst = 1
+    reqd_sticker_set = await event.client(functions.messages.GetStickerSetRequest(stickerset=types.InputStickerSetShortName(short_name=f"{get_stickerset.set.short_name}")))
+    noofst = len(get_stickerset.packs)
+    for message in reqd_sticker_set.documents:
+        if message and message.media:
+            if "image" in message.media.document.mime_type.split("/"):
+                catevent = await edit_or_reply(catevent, f"This sticker pack is kanging now . Status of kang process : {kangst}/{noofst}")
+                photo = io.BytesIO()
+                await event.client.download_file(message.media.document, photo)
+                if (DocumentAttributeFilename(file_name="sticker.webp") in message.media.document.attributes):
+                    emoji = message.media.document.attributes[1].alt
+            elif "tgsticker" in message.media.document.mime_type:
+                catevent = await edit_or_reply(catevent, f"This sticker pack is kanging now . Status of kang process : {kangst}/{noofst}")
+                await event.client.download_file(message.media.document, "AnimatedSticker.tgs")
+                attributes = message.media.document.attributes
+                for attribute in attributes:
+                    if isinstance(attribute, DocumentAttributeSticker):
+                        emoji = attribute.alt
+                is_anim = True
+                photo = 1
+            else:
+                await edit_delete(catevent, "`Unsupported File!`")
+                return
+        else:
+            await edit_delete(catevent, "`I can't kang that...`")
+            return
+        if photo:
+            splat = ("".join(event.text.split(maxsplit=1)[1:])).split()
+            emoji = emoji or "😂"
+            pack = 1
+            if len(splat) == 1:
+                pack = splat[0]
+            else:
+                return await edit_delete(catevent, "`Sorry the given name cant be used for pack or there is no pack with that name`")
+            packnick = pack_nick(username, pack, is_anim)
+            packname = pack_name(userid, pack, is_anim)
+            cmd = "/newpack"
+            stfile = io.BytesIO()
+            if is_anim:
+                cmd = "/newanimated"
+            else:
+                image = await resize_photo(photo)
+                stfile.name = "sticker.png"
+                image.save(stfile, "PNG")
+            response = urllib.request.urlopen(
+                urllib.request.Request(f"http://t.me/addstickers/{packname}")
+            )
+            htmlstr = response.read().decode("utf8").split("\n")
+            if (
+                "  A <strong>Telegram</strong> user has created the <strong>Sticker&nbsp;Set</strong>."
+                not in htmlstr
+            ):
+                async with event.client.conversation("Stickers") as conv:
+                    await add_to_pack(
+                        catevent,
+                        conv,
+                        event,
+                        packname,
+                        pack,
+                        userid,
+                        username,
+                        is_anim,
+                        stfile,
+                        emoji,
+                    )
+            else:
+                await catevent.edit("`Brewing a new Pack...`")
+                async with event.client.conversation("Stickers") as conv:
+                    await newpacksticker(
+                        catevent,
+                        conv,
+                        cmd,
+                        event,
+                        packnick,
+                        stfile,
+                        emoji,
+                        packname,
+                        is_anim,
+                    )
+        kangst += 1 
+        await asyncio.sleep(2)                
 
 @bot.on(admin_cmd(pattern="stkrinfo$", outgoing=True))
 @bot.on(sudo_cmd(pattern="stkrinfo$", allow_sudo=True))
