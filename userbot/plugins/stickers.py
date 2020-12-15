@@ -2,20 +2,18 @@
 # Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # modified and developed by @mrconfused
 
+import asyncio
 import io
 import math
 import random
 import urllib.request
 from os import remove
-from . import media_type
-from telethon.tl.types import InputStickerSetID
-from telethon.tl.functions.messages import GetStickerSetRequest
-import asyncio
-from telethon.tl import functions, types
+
 import emoji as catemoji
 import requests
 from bs4 import BeautifulSoup as bs
 from PIL import Image
+from telethon.tl import functions, types
 from telethon.tl.functions.messages import GetStickerSetRequest
 from telethon.tl.types import (
     DocumentAttributeFilename,
@@ -25,7 +23,7 @@ from telethon.tl.types import (
 )
 
 from ..utils import admin_cmd, sudo_cmd
-from . import CMD_HELP
+from . import CMD_HELP, media_type
 
 combot_stickers_url = "https://combot.org/telegram/stickers?q="
 
@@ -343,9 +341,8 @@ async def kang(args):
                 )
 
 
-
-@bot.on(admin_cmd(pattern="pkang ?(.*)",outgoing=True))
-@bot.on(sudo_cmd(pattern="pkang ?(.*)",allow_sudo=True))
+@bot.on(admin_cmd(pattern="pkang ?(.*)", outgoing=True))
+@bot.on(sudo_cmd(pattern="pkang ?(.*)", allow_sudo=True))
 async def pack_kang(event):
     if event.fwd_from:
         return
@@ -364,30 +361,61 @@ async def pack_kang(event):
     emoji = None
     reply = await event.get_reply_message()
     if not reply or media_type(reply) is None or media_type(reply) != "Sticker":
-        return await edit_delete(event, "reply to any sticker to send all stickers in that pack")
+        return await edit_delete(
+            event, "reply to any sticker to send all stickers in that pack"
+        )
     try:
         stickerset_attr = reply.document.attributes[1]
-        catevent = await edit_or_reply( event, "Fetching details of the sticker pack, please wait..")
+        catevent = await edit_or_reply(
+            event, "Fetching details of the sticker pack, please wait.."
+        )
     except BaseException:
         return await edit_delete(event, "This is not a sticker. Reply to a sticker.", 5)
     try:
-        get_stickerset = await event.client(GetStickerSetRequest(InputStickerSetID(id=stickerset_attr.stickerset.id,access_hash=stickerset_attr.stickerset.access_hash,)))
+        get_stickerset = await event.client(
+            GetStickerSetRequest(
+                InputStickerSetID(
+                    id=stickerset_attr.stickerset.id,
+                    access_hash=stickerset_attr.stickerset.access_hash,
+                )
+            )
+        )
     except:
-        return await edit_delete(catevent, "I guess this sticker is not part of any pack. So, i cant kang this sticker pack try kang for this sticker")
+        return await edit_delete(
+            catevent,
+            "I guess this sticker is not part of any pack. So, i cant kang this sticker pack try kang for this sticker",
+        )
     kangst = 1
-    reqd_sticker_set = await event.client(functions.messages.GetStickerSetRequest(stickerset=types.InputStickerSetShortName(short_name=f"{get_stickerset.set.short_name}")))
+    reqd_sticker_set = await event.client(
+        functions.messages.GetStickerSetRequest(
+            stickerset=types.InputStickerSetShortName(
+                short_name=f"{get_stickerset.set.short_name}"
+            )
+        )
+    )
     noofst = len(get_stickerset.packs)
     for message in reqd_sticker_set.documents:
         if message and message.media:
             if "image" in message.media.document.mime_type.split("/"):
-                catevent = await edit_or_reply(catevent, f"This sticker pack is kanging now . Status of kang process : {kangst}/{noofst}")
+                catevent = await edit_or_reply(
+                    catevent,
+                    f"This sticker pack is kanging now . Status of kang process : {kangst}/{noofst}",
+                )
                 photo = io.BytesIO()
                 await event.client.download_file(message.media.document, photo)
-                if (DocumentAttributeFilename(file_name="sticker.webp") in message.media.document.attributes):
+                if (
+                    DocumentAttributeFilename(file_name="sticker.webp")
+                    in message.media.document.attributes
+                ):
                     emoji = message.media.document.attributes[1].alt
             elif "tgsticker" in message.media.document.mime_type:
-                catevent = await edit_or_reply(catevent, f"This sticker pack is kanging now . Status of kang process : {kangst}/{noofst}")
-                await event.client.download_file(message.media.document, "AnimatedSticker.tgs")
+                catevent = await edit_or_reply(
+                    catevent,
+                    f"This sticker pack is kanging now . Status of kang process : {kangst}/{noofst}",
+                )
+                await event.client.download_file(
+                    message.media.document, "AnimatedSticker.tgs"
+                )
                 attributes = message.media.document.attributes
                 for attribute in attributes:
                     if isinstance(attribute, DocumentAttributeSticker):
@@ -407,7 +435,10 @@ async def pack_kang(event):
             if len(splat) == 1:
                 pack = splat[0]
             else:
-                return await edit_delete(catevent, "`Sorry the given name cant be used for pack or there is no pack with that name`")
+                return await edit_delete(
+                    catevent,
+                    "`Sorry the given name cant be used for pack or there is no pack with that name`",
+                )
             packnick = pack_nick(username, pack, is_anim)
             packname = pack_name(userid, pack, is_anim)
             cmd = "/newpack"
@@ -453,8 +484,9 @@ async def pack_kang(event):
                         packname,
                         is_anim,
                     )
-        kangst += 1 
-        await asyncio.sleep(2)                
+        kangst += 1
+        await asyncio.sleep(2)
+
 
 @bot.on(admin_cmd(pattern="stkrinfo$", outgoing=True))
 @bot.on(sudo_cmd(pattern="stkrinfo$", allow_sudo=True))
