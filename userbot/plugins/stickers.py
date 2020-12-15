@@ -459,8 +459,8 @@ async def pack_kang(event):
                 "  A <strong>Telegram</strong> user has created the <strong>Sticker&nbsp;Set</strong>."
                 not in htmlstr
             ):
-                catpackname = async with event.client.conversation("Stickers") as conv:
-                    await add_to_pack(
+                async with event.client.conversation("Stickers") as conv:
+                    catpackname = await add_to_pack(
                         catevent,
                         conv,
                         event,
@@ -474,8 +474,8 @@ async def pack_kang(event):
                         pkang=True
                     )
             else:
-                catpackname = async with event.client.conversation("Stickers") as conv:
-                    await newpacksticker(
+                async with event.client.conversation("Stickers") as conv:
+                    catpackname = await newpacksticker(
                         catevent,
                         conv,
                         cmd,
