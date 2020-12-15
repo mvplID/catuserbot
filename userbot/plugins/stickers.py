@@ -109,7 +109,7 @@ async def newpacksticker(
     packname,
     is_anim,
     otherpack=False,
-    pkang=False,
+    pkang=False
 ):
     await conv.send_message(cmd)
     await conv.get_response()
@@ -162,20 +162,12 @@ async def newpacksticker(
                 parse_mode="md",
                 time=10,
             )
+    else:
+        return [packname, packnick]
 
 
 async def add_to_pack(
-    catevent,
-    conv,
-    args,
-    packname,
-    pack,
-    userid,
-    username,
-    is_anim,
-    stfile,
-    emoji,
-    pkang=False,
+    catevent, conv, args, packname, pack, userid, username, is_anim, stfile, emoji,pkang=False
 ):
     await conv.send_message("/addsticker")
     await conv.get_response()
@@ -206,7 +198,7 @@ async def add_to_pack(
                 packname,
                 is_anim,
                 otherpack=True,
-                pkang=pkang,
+                pkang=pkang
             )
     if is_anim:
         await conv.send_file("AnimatedSticker.tgs")
@@ -234,7 +226,8 @@ async def add_to_pack(
             parse_mode="md",
             time=10,
         )
-
+    else:
+        return [packname, packnick]
 
 @bot.on(admin_cmd(outgoing=True, pattern="kang ?(.*)"))
 @bot.on(sudo_cmd(pattern="kang ?(.*)", allow_sudo=True))
@@ -376,15 +369,15 @@ async def pack_kang(event):
     reply = await event.get_reply_message()
     if not reply or media_type(reply) is None or media_type(reply) != "Sticker":
         return await edit_delete(
-            event, "reply to any sticker to send all stickers in that pack"
+            event, "`reply to any sticker to send all stickers in that pack`"
         )
     try:
         stickerset_attr = reply.document.attributes[1]
         catevent = await edit_or_reply(
-            event, "Fetching details of the sticker pack, please wait.."
+            event, "`Fetching details of the sticker pack, please wait..`"
         )
     except BaseException:
-        return await edit_delete(event, "This is not a sticker. Reply to a sticker.", 5)
+        return await edit_delete(event, "`This is not a sticker. Reply to a sticker.`", 5)
     try:
         get_stickerset = await event.client(
             GetStickerSetRequest(
@@ -408,6 +401,7 @@ async def pack_kang(event):
         )
     )
     noofst = len(get_stickerset.packs)
+    blablapacks = []
     for message in reqd_sticker_set.documents:
         if "image" in message.mime_type.split("/"):
             await edit_or_reply(
@@ -465,7 +459,7 @@ async def pack_kang(event):
                 "  A <strong>Telegram</strong> user has created the <strong>Sticker&nbsp;Set</strong>."
                 not in htmlstr
             ):
-                async with event.client.conversation("Stickers") as conv:
+                catpackname = async with event.client.conversation("Stickers") as conv:
                     await add_to_pack(
                         catevent,
                         conv,
@@ -477,10 +471,10 @@ async def pack_kang(event):
                         is_anim,
                         stfile,
                         emoji,
-                        pkang=True,
+                        pkang=True
                     )
             else:
-                async with event.client.conversation("Stickers") as conv:
+                catpackname = async with event.client.conversation("Stickers") as conv:
                     await newpacksticker(
                         catevent,
                         conv,
@@ -491,10 +485,16 @@ async def pack_kang(event):
                         emoji,
                         packname,
                         is_anim,
-                        pkang=True,
+                        pkang=True
                     )
+            if catpackname not in blablapacks:
+                blablapacks.append(catpackname)
         kangst += 1
         await asyncio.sleep(2)
+    result = "`This sticker pack is kanged into the following your sticker pack(s):`\n"
+    for i in blablapacks:
+        result += f"  •  [{i[1]}](t.me/addstickers/{i[0]})"
+    await catevent.edit(result)
 
 
 @bot.on(admin_cmd(pattern="stkrinfo$", outgoing=True))
