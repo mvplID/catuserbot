@@ -163,7 +163,7 @@ async def newpacksticker(
                 time=10,
             )
     else:
-        return [packname, packnick]
+        return packname
 
 
 async def add_to_pack(
@@ -237,7 +237,7 @@ async def add_to_pack(
             time=10,
         )
     else:
-        return [packname, packnick]
+        return packname
 
 
 @bot.on(admin_cmd(outgoing=True, pattern="kang ?(.*)"))
@@ -506,7 +506,7 @@ async def pack_kang(event):
         await asyncio.sleep(2)
     result = "`This sticker pack is kanged into the following your sticker pack(s):`\n"
     for i in blablapacks:
-        result += f"  •  [{i[1]}](t.me/addstickers/{i[0]})"
+        result += f"  •  [pack 1](t.me/addstickers/{i})"
     await catevent.edit(result)
 
 
