@@ -109,7 +109,7 @@ async def newpacksticker(
     packname,
     is_anim,
     otherpack=False,
-    pkang=False
+    pkang=False,
 ):
     await conv.send_message(cmd)
     await conv.get_response()
@@ -167,7 +167,17 @@ async def newpacksticker(
 
 
 async def add_to_pack(
-    catevent, conv, args, packname, pack, userid, username, is_anim, stfile, emoji,pkang=False
+    catevent,
+    conv,
+    args,
+    packname,
+    pack,
+    userid,
+    username,
+    is_anim,
+    stfile,
+    emoji,
+    pkang=False,
 ):
     await conv.send_message("/addsticker")
     await conv.get_response()
@@ -198,7 +208,7 @@ async def add_to_pack(
                 packname,
                 is_anim,
                 otherpack=True,
-                pkang=pkang
+                pkang=pkang,
             )
     if is_anim:
         await conv.send_file("AnimatedSticker.tgs")
@@ -228,6 +238,7 @@ async def add_to_pack(
         )
     else:
         return [packname, packnick]
+
 
 @bot.on(admin_cmd(outgoing=True, pattern="kang ?(.*)"))
 @bot.on(sudo_cmd(pattern="kang ?(.*)", allow_sudo=True))
@@ -377,7 +388,9 @@ async def pack_kang(event):
             event, "`Fetching details of the sticker pack, please wait..`"
         )
     except BaseException:
-        return await edit_delete(event, "`This is not a sticker. Reply to a sticker.`", 5)
+        return await edit_delete(
+            event, "`This is not a sticker. Reply to a sticker.`", 5
+        )
     try:
         get_stickerset = await event.client(
             GetStickerSetRequest(
@@ -471,7 +484,7 @@ async def pack_kang(event):
                         is_anim,
                         stfile,
                         emoji,
-                        pkang=True
+                        pkang=True,
                     )
             else:
                 async with event.client.conversation("Stickers") as conv:
@@ -485,7 +498,7 @@ async def pack_kang(event):
                         emoji,
                         packname,
                         is_anim,
-                        pkang=True
+                        pkang=True,
                     )
             if catpackname not in blablapacks:
                 blablapacks.append(catpackname)
