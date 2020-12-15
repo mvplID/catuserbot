@@ -395,38 +395,34 @@ async def pack_kang(event):
     )
     noofst = len(get_stickerset.packs)
     for message in reqd_sticker_set.documents:
-        if message and message.media:
-            if "image" in message.media.document.mime_type.split("/"):
-                catevent = await edit_or_reply(
-                    catevent,
-                    f"This sticker pack is kanging now . Status of kang process : {kangst}/{noofst}",
-                )
-                photo = io.BytesIO()
-                await event.client.download_file(message.media.document, photo)
-                if (
-                    DocumentAttributeFilename(file_name="sticker.webp")
-                    in message.media.document.attributes
-                ):
-                    emoji = message.media.document.attributes[1].alt
-            elif "tgsticker" in message.media.document.mime_type:
-                catevent = await edit_or_reply(
-                    catevent,
-                    f"This sticker pack is kanging now . Status of kang process : {kangst}/{noofst}",
-                )
-                await event.client.download_file(
-                    message.media.document, "AnimatedSticker.tgs"
-                )
-                attributes = message.media.document.attributes
-                for attribute in attributes:
-                    if isinstance(attribute, DocumentAttributeSticker):
-                        emoji = attribute.alt
-                is_anim = True
-                photo = 1
-            else:
-                await edit_delete(catevent, "`Unsupported File!`")
-                return
+        if "image" in message.mime_type.split("/"):
+            await edit_or_reply(
+                catevent,
+                f"This sticker pack is kanging now . Status of kang process : {kangst}/{noofst}",
+            )
+            photo = io.BytesIO()
+            await event.client.download_file(message, photo)
+            if (
+                DocumentAttributeFilename(file_name="sticker.webp")
+                in message.attributes
+            ):
+                emoji = message.attributes[1].alt
+        elif "tgsticker" in message.mime_type:
+            await edit_or_reply(
+                catevent,
+                f"This sticker pack is kanging now . Status of kang process : {kangst}/{noofst}",
+            )
+            await event.client.download_file(
+                message, "AnimatedSticker.tgs"
+            )
+            attributes = message.attributes
+            for attribute in attributes:
+                if isinstance(attribute, DocumentAttributeSticker):
+                    emoji = attribute.alt
+            is_anim = True
+            photo = 1
         else:
-            await edit_delete(catevent, "`I can't kang that...`")
+            await edit_delete(catevent, "`Unsupported File!`")
             return
         if photo:
             splat = ("".join(event.text.split(maxsplit=1)[1:])).split()
