@@ -109,6 +109,7 @@ async def newpacksticker(
     packname,
     is_anim,
     otherpack=False,
+    pkang=False
 ):
     await conv.send_message(cmd)
     await conv.get_response()
@@ -144,26 +145,27 @@ async def newpacksticker(
     await args.client.send_read_acknowledge(conv.chat_id)
     await conv.get_response()
     await args.client.send_read_acknowledge(conv.chat_id)
-    if otherpack:
-        await edit_delete(
-            catevent,
-            f"`Sticker kanged to a Different Pack !\
-            \nAnd Newly created pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
-            parse_mode="md",
-            time=10,
-        )
-    else:
-        await edit_delete(
-            catevent,
-            f"`Sticker kanged successfully!\
-            \nYour Pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
-            parse_mode="md",
-            time=10,
-        )
+    if not pkang:
+        if otherpack:
+            await edit_delete(
+                catevent,
+                f"`Sticker kanged to a Different Pack !\
+                \nAnd Newly created pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
+                parse_mode="md",
+                time=10,
+            )
+        else:
+            await edit_delete(
+                catevent,
+                f"`Sticker kanged successfully!\
+                \nYour Pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
+                parse_mode="md",
+                time=10,
+            )
 
 
 async def add_to_pack(
-    catevent, conv, args, packname, pack, userid, username, is_anim, stfile, emoji
+    catevent, conv, args, packname, pack, userid, username, is_anim, stfile, emoji,pkang=False
 ):
     await conv.send_message("/addsticker")
     await conv.get_response()
@@ -194,6 +196,7 @@ async def add_to_pack(
                 packname,
                 is_anim,
                 otherpack=True,
+                pkang=pkang
             )
     if is_anim:
         await conv.send_file("AnimatedSticker.tgs")
@@ -213,13 +216,14 @@ async def add_to_pack(
     await conv.send_message("/done")
     await conv.get_response()
     await args.client.send_read_acknowledge(conv.chat_id)
-    await edit_delete(
-        catevent,
-        f"`Sticker kanged successfully!\
-         \nYour Pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
-        parse_mode="md",
-        time=10,
-    )
+    if not pkang:
+        await edit_delete(
+            catevent,
+            f"`Sticker kanged successfully!\
+             \nYour Pack is` [here](t.me/addstickers/{packname}) `and emoji for the kanged sticker is {emoji}`",
+            parse_mode="md",
+            time=10,
+        )
 
 
 @bot.on(admin_cmd(outgoing=True, pattern="kang ?(.*)"))
@@ -383,7 +387,7 @@ async def pack_kang(event):
     except:
         return await edit_delete(
             catevent,
-            "I guess this sticker is not part of any pack. So, i cant kang this sticker pack try kang for this sticker",
+            "`I guess this sticker is not part of any pack. So, i cant kang this sticker pack try kang for this sticker`",
         )
     kangst = 1
     reqd_sticker_set = await event.client(
@@ -398,7 +402,7 @@ async def pack_kang(event):
         if "image" in message.mime_type.split("/"):
             await edit_or_reply(
                 catevent,
-                f"This sticker pack is kanging now . Status of kang process : {kangst}/{noofst}",
+                f"`This sticker pack is kanging now . Status of kang process : {kangst}/{noofst}`",
             )
             photo = io.BytesIO()
             await event.client.download_file(message, photo)
@@ -410,7 +414,7 @@ async def pack_kang(event):
         elif "tgsticker" in message.mime_type:
             await edit_or_reply(
                 catevent,
-                f"This sticker pack is kanging now . Status of kang process : {kangst}/{noofst}",
+                f"`This sticker pack is kanging now . Status of kang process : {kangst}/{noofst}`",
             )
             await event.client.download_file(message, "AnimatedSticker.tgs")
             attributes = message.attributes
@@ -463,9 +467,9 @@ async def pack_kang(event):
                         is_anim,
                         stfile,
                         emoji,
+                        pkang=True
                     )
             else:
-                await catevent.edit("`Brewing a new Pack...`")
                 async with event.client.conversation("Stickers") as conv:
                     await newpacksticker(
                         catevent,
@@ -477,6 +481,7 @@ async def pack_kang(event):
                         emoji,
                         packname,
                         is_anim,
+                        pkang=True
                     )
         kangst += 1
         await asyncio.sleep(2)
