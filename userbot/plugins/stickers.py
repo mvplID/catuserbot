@@ -177,6 +177,7 @@ async def add_to_pack(
     is_anim,
     stfile,
     emoji,
+    cmd,
     pkang=False,
 ):
     await conv.send_message("/addsticker")
@@ -342,6 +343,7 @@ async def kang(args):
                     is_anim,
                     stfile,
                     emoji,
+                    cmd,
                 )
         else:
             await catevent.edit("`Brewing a new Pack...`")
@@ -484,6 +486,7 @@ async def pack_kang(event):
                         is_anim,
                         stfile,
                         emoji,
+                        cmd,
                         pkang=True,
                     )
             else:
