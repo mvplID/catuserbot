@@ -428,7 +428,7 @@ async def pack_kang(event):
             pack = 1
             if len(splat) == 1:
                 pack = splat[0]
-            else:
+            elif len(splat) > 1:
                 return await edit_delete(
                     catevent,
                     "`Sorry the given name cant be used for pack or there is no pack with that name`",
