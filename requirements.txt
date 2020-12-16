@@ -1,4 +1,4 @@
-git+https://github.com/LonamiWebs/Telethon
+telethon==1.17.5
 aiofiles
 aiohttp
 asyncurban

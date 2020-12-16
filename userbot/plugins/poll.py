@@ -5,7 +5,7 @@ from telethon.errors.rpcerrorlist import PollOptionInvalidError
 from telethon.tl.types import InputMediaPoll, Poll
 
 from .. import CMD_HELP
-from ..utils import admin_cmd, edit_or_reply, sudo_cmd
+from ..utils import admin_cmd, sudo_cmd
 from . import Build_Poll
 
 
@@ -63,7 +63,7 @@ async def pollcreator(catpoll):
                 )
             except ForbiddenError:
                 await edit_or_reply(catpoll, "`This chat has forbidden the polls`")
-            except exception as e:
+            except Exception as e:
                 await edit_or_reply(catpoll, str(e))
         else:
             await edit_or_reply(
